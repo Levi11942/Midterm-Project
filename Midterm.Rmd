@@ -1,0 +1,311 @@
+---
+title: "Midterm Project"
+author: "Levi Liedke"
+date: "2024-03-27"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include =FALSE}
+# Code to create the COURT
+library(ggplot2)
+court_plot <- ggplot(data=data.frame(x=1,y=1),aes(x,y), color_fill = "navy")+
+   ###outside box:
+geom_path(data=data.frame(x=c(-25,-25,25,25,-25),y=c(0,47,47,0,0)), color = "blue")+
+   ###solid FT semicircle above FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(19+sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###dashed FT semicircle below FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(19-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y),linetype='dashed', color = "red")+
+   ###key:
+geom_path(data=data.frame(x=c(-8,-8,8,8,-8),y=c(0,19,19,0,0)), color = "navy")+
+   ###box inside the key:
+geom_path(data=data.frame(x=c(-6,-6,6,6,-6),y=c(0,19,19,0,0)), color = "blue")+
+   ###restricted area semicircle:
+geom_path(data=data.frame(x=c(-4000:(-1)/1000,1:4000/1000),y=c(5.25+sqrt(4^2-c(-4000:(-1)/1000,1:4000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###halfcourt semicircle:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(47-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###rim:
+geom_path(data=data.frame(x=c(-750:(-1)/1000,1:750/1000,750:1/1000,-1:-750/1000),y=c(c(5.25+sqrt(0.75^2-c(-750:(-1)/1000,1:750/1000)^2)),c(5.25-sqrt(0.75^2-c(750:1/1000,-1:-750/1000)^2)))),aes(x=x,y=y), color = "white")+
+   ###backboard:
+geom_path(data=data.frame(x=c(-3,3),y=c(4,4)),lineend='butt', color = "white")+
+   ###three-point line:
+geom_path(data=data.frame(x=c(-22,-22,-22000:(-1)/1000,1:22000/1000,22,22),y=c(0,169/12,5.25+sqrt(23.75^2-c(-22000:(-1)/1000,1:22000/1000)^2),169/12,0)),aes(x=x,y=y), color = "navy")+
+   ###fix aspect ratio to 1:1
+coord_fixed() + theme_void() +
+   theme(plot.background = element_rect(fill = "beige"))
+
+library(ggplot2) #Calling the different Librarys of functions that I will need to use
+library(dplyr)
+library(tidyverse)
+#reading in the data of the 5 seasons that I wanted to make shot charts for
+shots1 <- read.csv("NBA_2023_Shots.csv")
+shots2 <- read.csv("NBA_2004_Shots.csv")
+shots3 <- read.csv("NBA_2008_Shots.csv")
+shots4 <- read.csv("NBA_2013_Shots.csv")
+shots5 <- read.csv("NBA_2018_Shots.csv")
+# Using a filter to trim the data down to just the LA Clippers data, and then also filtering out the shots past half court to make the graphics look better, Did this for all 5 seasons.
+shots_clippers <- shots1 %>%
+  filter(TEAM_NAME == "LA Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers2 <- shots2 %>% 
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers3 <- shots3 %>%
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers4 <- shots4 %>%
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers5 <- shots5 %>%
+  filter(TEAM_NAME == "LA Clippers") %>%
+  filter(LOC_Y <= 47)
+
+# Creating each individual shot chart, starting by calling the court and then using geom_point to create the plot
+# Change alpha to 0.20 to make the points of the plot transparent since there are so many points that overlay one another
+# Using labels to label the plot and scale_color_manual to change what colors I want the plot to consist of
+# Use theme to change where I want the legend and title to be positioned
+#repeat 5 times for each season
+
+#2023 Shot Chart
+shots_2023 <- court_plot + 
+  geom_point(data = shots_clippers, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2023 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2018 Shot Chart
+shots_2018 <- court_plot + 
+  geom_point(data = shots_clippers5, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2018 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2013 Shot Chart
+shots_2013 <- court_plot + 
+  geom_point(data = shots_clippers4, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2013 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2008 Shot Chart
+
+shots_2008 <- court_plot + 
+  geom_point(data = shots_clippers3, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2008 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2004 Shot Chart
+shots_2004 <- court_plot +
+  geom_point(data = shots_clippers2, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20)  +
+  labs(title = "L.A. Clippers 2004 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+Shot Charts for the L.A. Clippers from 2004 to 2023
+
+```{r}
+shots_2004
+shots_2008
+shots_2013
+shots_2018
+shots_2023
+
+```
+
+Key Points:
+
+-   The amount of 3 point shots attempted has gone up a lot from 2004 to 2023
+
+-   The percentages of threes made has also gone up
+
+-   The amount of mid range shots has decreased greatly from 2004 to 2023
+
+-   The amount of made shots increases from 2004 to 2023
+
+Explanation
+
+The amount of three pointers shot throughout the entire NBA has gone up drastically since the 2003-2004 season. For the L.A. Clippers in the 03-04 season the team attempted only 12.5 threes per game, while in 12-13 that number jumped up to 21.4 threes per game, and now in 2023 that number is all the way up to 33.3 three point attempts per game.
+
+Along with more three pointers being shot, the percentage of made threes also has gone up. In 2004 the team made on average 32.1% of their threes. While in 2013 the team made on average 35.8% of their threes. Now in 2023 the team has made on average 38.1% of their threes. Overall, the team has been shooting more threes and has gotten more efficient in shooting them over the years.
+
+While shooting more threes, the team has traded that off with shooting less mid range shots. In 2004 the team shot 1929 total mid range shots. While in 2013 the team shot 1733 total mid range shots. And in 2023 the team only shot 1077 mid range shots. Overall in recent years the mid range shot has become less prevalent in the NBA as teams will often times look to shoot a three or attack the rim instead.
+
+The amount of shots made per game has also had a trend upward. In 2004 the team only made 34.4 shots per game. While in 2013 the team made about 38.5 shots per game. And in 2023 the team 41.1 shots per game. Along with that the points per game has also grown from 101.1 points per game in 2013 to 113.6 points per game in 2023.
+
+```{r}
+# Code to create the COURT
+library(ggplot2)
+court_plot <- ggplot(data=data.frame(x=1,y=1),aes(x,y), color_fill = "navy")+
+   ###outside box:
+geom_path(data=data.frame(x=c(-25,-25,25,25,-25),y=c(0,47,47,0,0)), color = "blue")+
+   ###solid FT semicircle above FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(19+sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###dashed FT semicircle below FT line:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(19-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y),linetype='dashed', color = "red")+
+   ###key:
+geom_path(data=data.frame(x=c(-8,-8,8,8,-8),y=c(0,19,19,0,0)), color = "navy")+
+   ###box inside the key:
+geom_path(data=data.frame(x=c(-6,-6,6,6,-6),y=c(0,19,19,0,0)), color = "blue")+
+   ###restricted area semicircle:
+geom_path(data=data.frame(x=c(-4000:(-1)/1000,1:4000/1000),y=c(5.25+sqrt(4^2-c(-4000:(-1)/1000,1:4000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###halfcourt semicircle:
+geom_path(data=data.frame(x=c(-6000:(-1)/1000,1:6000/1000),y=c(47-sqrt(6^2-c(-6000:(-1)/1000,1:6000/1000)^2))),aes(x=x,y=y), color = "red")+
+   ###rim:
+geom_path(data=data.frame(x=c(-750:(-1)/1000,1:750/1000,750:1/1000,-1:-750/1000),y=c(c(5.25+sqrt(0.75^2-c(-750:(-1)/1000,1:750/1000)^2)),c(5.25-sqrt(0.75^2-c(750:1/1000,-1:-750/1000)^2)))),aes(x=x,y=y), color = "white")+
+   ###backboard:
+geom_path(data=data.frame(x=c(-3,3),y=c(4,4)),lineend='butt', color = "white")+
+   ###three-point line:
+geom_path(data=data.frame(x=c(-22,-22,-22000:(-1)/1000,1:22000/1000,22,22),y=c(0,169/12,5.25+sqrt(23.75^2-c(-22000:(-1)/1000,1:22000/1000)^2),169/12,0)),aes(x=x,y=y), color = "navy")+
+   ###fix aspect ratio to 1:1
+coord_fixed() + theme_void() +
+   theme(plot.background = element_rect(fill = "beige"))
+
+```
+
+Edited the colors of the court in this code and named the court, court_plot to make it easier to call when creating the shot charts.
+
+```{r}
+library(ggplot2) #Calling the different Librarys of functions that I will need to use
+library(dplyr)
+library(tidyverse)
+#reading in the data of the 5 seasons that I wanted to make shot charts for
+shots1 <- read.csv("NBA_2023_Shots.csv")
+shots2 <- read.csv("NBA_2004_Shots.csv")
+shots3 <- read.csv("NBA_2008_Shots.csv")
+shots4 <- read.csv("NBA_2013_Shots.csv")
+shots5 <- read.csv("NBA_2018_Shots.csv")
+# Using a filter to trim the data down to just the LA Clippers data, and then also filtering out the shots past half court to make the graphics look better, Did this for all 5 seasons.
+shots_clippers <- shots1 %>%
+  filter(TEAM_NAME == "LA Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers2 <- shots2 %>% 
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers3 <- shots3 %>%
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers4 <- shots4 %>%
+  filter(TEAM_NAME == "Los Angeles Clippers") %>%
+  filter(LOC_Y <= 47)
+
+shots_clippers5 <- shots5 %>%
+  filter(TEAM_NAME == "LA Clippers") %>%
+  filter(LOC_Y <= 47)
+
+# Creating each individual shot chart, starting by calling the court and then using geom_point to create the plot
+# Change alpha to 0.20 to make the points of the plot transparent since there are so many points that overlay one another
+# Using labels to label the plot and scale_color_manual to change what colors I want the plot to consist of
+# Use theme to change where I want the legend and title to be positioned
+#repeat 5 times for each season
+
+#2023 Shot Chart
+shots_2023 <- court_plot + 
+  geom_point(data = shots_clippers, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2023 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2018 Shot Chart
+shots_2018 <- court_plot + 
+  geom_point(data = shots_clippers5, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2018 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2013 Shot Chart
+shots_2013 <- court_plot + 
+  geom_point(data = shots_clippers4, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2013 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2008 Shot Chart
+
+shots_2008 <- court_plot + 
+  geom_point(data = shots_clippers3, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20) +
+  labs(title = "L.A. Clippers 2008 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#2004 Shot Chart
+shots_2004 <- court_plot +
+  geom_point(data = shots_clippers2, aes(x = LOC_X, y = LOC_Y, color = SHOT_MADE), alpha = 0.20)  +
+  labs(title = "L.A. Clippers 2004 Shots", x = "",y = "") +
+  scale_color_manual(values = c("red", "blue"), labels = c("Miss", "Make")) +
+  guides(color = guide_legend(title = "Shots")) +
+    theme(
+    legend.title = element_text(hjust = 0.5, margin = margin(b = 1)), legend.position = "left") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+Now Created a an accuracy plot to show the different shooting percentages for different areas on the court.
+
+```{r}
+
+library(ggplot2)
+library(dplyr)
+
+shots_data <- shots_clippers
+
+# Calculate accuracy 
+accuracy_data <- shots_data %>%
+  group_by(LOC_X, LOC_Y) %>%
+  summarise(accuracy = mean(SHOT_MADE, na.rm = TRUE))
+
+# Create plot
+accuracy_plot <- ggplot(accuracy_data, aes(x = LOC_X, y = LOC_Y, fill = accuracy)) +
+  geom_tile() + 
+  scale_fill_gradient(low = "red", high = "green", na.value = "gray", name = "Accuracy") +  
+  labs(title = "Shot Accuracy - Clippers 2023 Season", x = "", y = "") +  
+  theme_minimal() + theme_void()
+ 
+
+
+accuracy_plot
+```
+
+
+Was having trouble adding the court to this plot. 
